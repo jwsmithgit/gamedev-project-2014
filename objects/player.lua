@@ -1,8 +1,11 @@
 -- player.lua
+-- {} are hash tables, key:value pairs
 player = {}
 
 -- this runs when the player is loaded
 function player.load()
+
+	-- placing variables into the {}
 	player.state = "stop" --stop/walk/attack
 	player.x = 100
 	player.y = 100
