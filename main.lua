@@ -20,7 +20,6 @@ function love.load()
 	-- call player load function
 	player.load()
 	enemyGen.load()
-	enemy.load()
 
 	tile_size = 32;
 	-- TODO: tile size variable
@@ -83,7 +82,6 @@ function love.update(dt)
 	anim_explosion:update(dt)   
 	anim_explosion_bounce:update(dt)  
 
-
 	-- TODO: update window and camera
 
 	-- TODO: check window bounds with spawners, add to scene object. loop through data map,
@@ -99,9 +97,7 @@ function love.draw()
 
 	-- call player draw function
 	player.draw()
-	enemy.draw()
 	enemyGen.draw()
-
 
 	-- update explosion animations
 	anim_explosion:draw(200,100)
