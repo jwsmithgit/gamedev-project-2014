@@ -2,11 +2,11 @@
 
 enemy = {}
 
-function enemy.load(x , y, pace)
-	enemy.x = x
-	enemy.y = y
-	enemy.speed = pace
-	--enemy.img = love.graphics.newImage("images/square.png")
+function enemy.load()
+	enemy.x = 300;
+	enemy.y = 300;
+	enemy.speed = 10;
+	enemy.img = love.graphics.newImage("images/square.png")
 	enemy.state = "move"
 
 	end
@@ -29,7 +29,9 @@ function enemy.load(x , y, pace)
 
 		end
 
-function enemy.draw(cimage, x , y)
-	love.graphics.draw(cimage, enemy.x, enemy.y)
+function enemy.draw()
+	love.graphics.draw(enemy.img, enemy.x, enemy.y)
 end
+
+
 

@@ -11,12 +11,16 @@ require("objects/spawner")
 require("objects/tilemap")
 require("objects/window")
 require("objects/zbuffer")
+require("objects/enemyGen")
+require("objects/enemy")
 
 -- runs when game is loaded
 function love.load()
 
 	-- call player load function
 	player.load()
+	enemyGen.load()
+	enemy.load()
 
 	tile_size = 32;
 	-- TODO: tile size variable
@@ -73,6 +77,7 @@ function love.update(dt)
 
 	-- call player update function
 	player.update(dt)
+	enemy.update(dt)
 
 	-- update explosion animations
 	anim_explosion:update(dt)   
@@ -94,6 +99,9 @@ function love.draw()
 
 	-- call player draw function
 	player.draw()
+	enemy.draw()
+	enemyGen.draw()
+
 
 	-- update explosion animations
 	anim_explosion:draw(200,100)
