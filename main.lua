@@ -1,50 +1,101 @@
 -- import those lua files
 -- AnAL is a animation library
-require("libs/AnAL")
+require "libs/AnAL"
 -- player is an object library
-require("objects/camera")
-require("objects/collision")
-require("objects/data")
-require("objects/objectmap")
-require("objects/player")
-require("objects/spawner")
-require("objects/tilemap")
-require("objects/window")
-require("objects/zbuffer")
-require("objects/enemyGen")
-require("objects/enemy")
+local astray = require "libs/astray"  -- astray object
+
+local data = require "objects/data"  -- data map for enemies, abilities, etc
+
+local camera = require "objects/camera" -- camera objects, uses player
+local zbuffer = require "objects/zbuffer"  -- depth manager
+
+local tilegrid = require "objects/tilegrid" -- grid of ground tile
+local objectgrid = require "objects/objectgrid"  -- grid of objects 
+
+local collision = require "objects/collision"  -- collision manager
+
+local player = require "objects/player" -- player object
+
+-- global variable table
+global = {}
+
+-- iterate through 2d array
+function drawdungeon( tiles, width, height )
+
+	-- Opens a file in append mode
+	--file = io.open("test.lua", "a")
+	-- sets the default output file as test.lua
+	--io.output(file)
+
+    for y = 0, height do
+        local line = ''
+		for x = 0, width do
+			--print(x)B
+			line = line .. tiles[x][y]
+		end
+		print(line)
+		-- appends a word test to the last line of the file
+		--io.write(line)
+		--io.write("\n")
+	end
+	print('')
+
+
+	-- closes the open file
+	--io.close(file)
+end
+
 
 -- runs when game is loaded
 function love.load()
 
-	-- call player load function
-	player.load()
-	enemyGen.load()
+	-- generate astray map
+	local symbols = {Wall='#', Empty=' ', DoorN=' ', DoorS=' ', DoorE=' ', DoorW=' '}
 
-	tile_size = 32;
-	-- TODO: tile size variable
+	local generator = astray.Astray:new( 20, 10, 15, 70, 80, astray.RoomGenerator:new(4, 2, 6, 2, 6) )
+	
+	local dungeon = generator:GenerateDungeon()
+	local tiles = generator:CellToTiles(dungeon, symbols )
+	generator:GenerateSparsifyMaze(dungeon)
+	local tiles = generator:CellToTiles(dungeon, symbols )
+	generator:GenerateRemoveDeadEnds(dungeon)
+	local tiles = generator:CellToTiles(dungeon, symbols )
+	generator:GeneratePlaceRooms(dungeon)
+	local tiles = generator:CellToTiles(dungeon, symbols )
+	generator:GeneratePlaceDoors(dungeon)
+	local tiles = generator:CellToTiles(dungeon, symbols )
+
+	-- +1 because tiles is 0 based
+	tilegrid:load( tiles, #tiles + 1, #tiles[1] + 1)
+
+	--drawdungeon( tiles, #tiles, #tiles[1] )
+	--drawdungeon( tilegrid.m, #tilegrid.m, #tilegrid.m[1] )
+
+
+	objectgrid:load( tilegrid.m, #tilegrid.m, #tilegrid.m[1] )
+
+
+	--	GLOBALS
+	-- tile size variable
+	global.tilesize = 32;
+
+
+	-- LOAD
+	-- call player load function
+	player:load( 1000, 1000 )
+	camera:load( player.x + player.xo, player.y + player.yo )
 
 	-- create explosion that loops
-	explosion = love.graphics.newImage("images/explosion.png")
-	anim_explosion = newAnimation( explosion, 96, 96, 0.1, 0 )
+	--explosion = love.graphics.newImage("images/explosion.png")
+	--anim_explosion = newAnimation( explosion, 96, 96, 0.1, 0 )
 
 	-- create explosion that bounces
-	anim_explosion_bounce = newAnimation( explosion, 96, 96, 0.1, 0 )
-	anim_explosion_bounce:setMode("bounce")
+	--anim_explosion_bounce = newAnimation( explosion, 96, 96, 0.1, 0 )
+	--anim_explosion_bounce:setMode("bounce")
 
+	--zbuffer.load()
+	--camera.load()
 
-	-- TODO: generate level
-	--[[
-		world holds level for each floor
-		level holds variable that has grid of level (tiles)
-			tiles for (wall, floor, corners)
-		grid of objects (chests) and enemies (positions at start)
-			names are stored at location
-		]]
-
-	-- TODO: have database object that holds enemy, item and attack data
-	-- 		define variables for each object in database
-	-- 		be able to look up data from/for objects, give object name, and variable to find value
 
 	-- TODO: have window for player with width and height, and tracks (resolution / tile size ), x position, y positions,
 	--		window 
@@ -56,6 +107,12 @@ function love.load()
 	-- TODO: zbuffer list, holds an elements for each y pixel
 	--		as camera moves, lists are updated, list position is object yorigin position - camera yposition
 	--		when objects are drawn, they are drawn in order of the zbuffer, y-resolution -> zero. Draw event loops through objects
+
+
+
+	-- TODO: have database object that holds enemy, item and attack data
+	-- 		define variables for each object in database
+	-- 		be able to look up data from/for objects, give object name, and variable to find value
 
 	-- TODO: colliion overlord object: database and functions for different collisons
 	-- 		transfers data from object to other object. Like damage to health
@@ -72,16 +129,22 @@ end
 
 -- update functions run every step (30 times a second)
 -- dt is the time between each step
-function love.update(dt)
+function love.update( dt )
 
 	-- call player update function
-	player.update(dt)
-	enemy.update(dt)
+	player:update( dt )
+
+	camera:update( player.x + player.xo, player.y + player.yo )
+
+	--print( player.x )
+
+	--enemy.update(dt)
 
 	-- update explosion animations
-	anim_explosion:update(dt)   
-	anim_explosion_bounce:update(dt)  
+	--anim_explosion:update(dt)   
+	--anim_explosion_bounce:update(dt)  
 
+	--zbuffer.update(dt)
 	-- TODO: update window and camera
 
 	-- TODO: check window bounds with spawners, add to scene object. loop through data map,
@@ -95,15 +158,19 @@ end
 -- runs when game is drawn, every step
 function love.draw() 
 
+	tilegrid:draw( camera.left, camera.right, camera.top, camera.bottom )
+	love.graphics.draw( player.img, player.x - camera.left, player.y - camera.top )
+
 	-- call player draw function
-	player.draw()
+	--[[
 	enemyGen.draw()
 
 	-- update explosion animations
 	anim_explosion:draw(200,100)
 	anim_explosion_bounce:draw(300,100)
 
-	-- loop through zbuffer and draw objects
+	zbuffer.draw()]]--
 
+	-- loop through zbuffer and draw objects
 
 end
