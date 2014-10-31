@@ -1,38 +1,35 @@
--- player.lua
--- {} are hash tables, key:value pairs
 local player = {}
+player.__index = player
+
 player.imgdown = love.graphics.newImage("images/playerdown.png")
+player.w = player.imgdown:getWidth()
+player.h = player.imgdown:getHeight()
 player.xo = player.imgdown:getWidth() / 2
 player.yo = player.imgdown:getHeight() * 3 / 4
 player.xb = 4
 player.yb = 0
-player.w = player.imgdown:getWidth()
-player.h = player.imgdown:getHeight()
-player.bw = 20
-player.bh = player.imgdown:getHeight()
+player.wb = 20
+player.hb = player.imgdown:getHeight()
 
--- this runs when the player is loaded
-function player:load( px, py )
 
-	-- placing variables into the {}
+function player.new( px, py )
+	local self = setmetatable({}, player)
 	self.state = "stop" --stop/walk/attack
 	self.img = love.graphics.newImage("images/playerdown.png")
 	self.x = px
 	self.y = py
 	self.speed = 180
 	self.attack_cooldown = 0
-
+	return self
 end
 
 function player:update( dt )
-	
 	if love.keyboard.isDown(" ") or self.attack_cooldown > 0 then
 		self:attack( dt )
 	--move player
 	elseif love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") then
 		self:move( self.speed * dt )
 	end
-
 end
 
 function player:stop()
@@ -54,7 +51,7 @@ function player:move( speed )
 	local xmove = 0
 	local ymove = 0
 
-	if love.keyboard.isDown("lshift") then
+	if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
 		speed = speed * 2
 	end
 

@@ -1,8 +1,10 @@
 local camera = {}
-camera.width = love.graphics.getWidth( )
-camera.height = love.graphics.getHeight( )
+camera.__index = camera
 
-function camera:load( px , py )
+local camera.width = love.graphics.getWidth( )
+local camera.height = love.graphics.getHeight( )
+
+function camera:new( px , py )
 
 	-- camera center is in the map
 
@@ -34,7 +36,6 @@ function camera:update( px, py )
 	--[[for j in zbuffer.m do
 		-- check if that y pos is empty
 
-
 		if next(j) ~= nil then
 
 			-- get lowest and highest value for that yposition
@@ -51,8 +52,6 @@ function camera:update( px, py )
 			if ( max > self.right + self.boundary ) then
 				table.remove( j, max )
 			end
-
-
 
 		end
 

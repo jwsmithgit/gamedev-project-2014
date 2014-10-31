@@ -1,60 +1,44 @@
 local objectgrid = {}
+objectgrid.__index = objectgrid
 
-function objectgrid:load( tile, width, height )
+function objectgrid.new(tile, width, height)
+	local self = setmetatable({}, objectgrid)
 
-	self.width = width
-	self.height = height
-
-	self.m = {}          -- create the matrix
-    for i = 1, self.width do
-      	self.m[i] = {}     -- create a new row
-
-      	for j = 1, self.height do
-      		self.m[i][j] = 0 -- create hash for position, multiple objects at same position
+	-- initialize 2d matrix
+	self.m = {}
+    for i = 0, width-1 do
+      	self.m[i] = {}
+      	for j = 0, height-1 do
+      		self.m[i][j] = 0
       	end
     end
 
+    -- find positions without walls
     self.free = {}
-
-    -- iterate through astray and assign that value to 4x4 grid in m
-
-	for y = 1, height do
-    	for x = 1, width do
-
-			--self.m[x][y] = tile[x][y]
-
-			-- add free positions to list
-			if tile[x][y] == " " then
-				self.free[#self.free + 1] = { ["x"] = x, ["y"] = y }
+    for i = 0, width do
+		for j = 0, height do
+			if tile[i][j] == " " then
+				table.insert( self.free, { ["x"] = x, ["y"] = y } )
 			end
-
 		end
 	end
 
+	return self
 end
 
 -- draw the tiles based on current screen
-function objectgrid:draw( left, right, top, bottom )
-	
-	local tleft = math.ceil(left/global.tilesize)
-	local tright = math.ceil(right/global.tilesize) + 1
-	local ttop = math.ceil(top/global.tilesize)
-	local tbottom = math.ceil(bottom/global.tilesize) + 1
+function objectgrid:draw(l, r, w, h)
+	local tl = math.floor(l/tsize)
+	local tt = math.floor(t/tsize)
+	local tr = math.floor((l+w)/tsize)
+	local tb = math.floor((t+h)/tsize)
 
-	local tsize = global.tilesize
+	for x = tl, tr do
+		for y = tt, tb do 
 
-	for x = tleft, tright  do
-		for y = ttop, tbottom do 
-
-			if x >= 1 and x <= #self.m and y >= 1 and y <= #self.m[1] then
-		        love.graphics.draw( 
-		        	self[ self.m[x][y] ], 
-		            ( (x - tleft ) * tsize ) - ( left % tsize ), 
-		            ( (y - ttop ) * tsize ) - ( top % tsize ))
-	    	end
+	        love.graphics.draw( self[ self.m[x][y] ], x*tsize, y*tsize )
 		end
 	end
-
 end
 
 -- place enemy objects in objectgrid
@@ -62,7 +46,8 @@ function objectgrid:populate( n )
 
 	for i=1, n do
 
-		math.random( #data.enemies )
+		local randomEnemy = math.random( #data.enemies )
+		
 	end
 end
 

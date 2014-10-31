@@ -1,7 +1,7 @@
 local data = {}
 require("objects/enemy1") -- enemy1 object
 
-function data.load(  )
+function data.new(  )
 
 	data.id = 0
 

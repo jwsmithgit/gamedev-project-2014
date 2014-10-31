@@ -1,30 +1,27 @@
 local tilegrid = {}
+tilegrid.__index = tilegrid
+
 tilegrid["#"] = love.graphics.newImage("images/tile#.png")
 tilegrid[" "] = love.graphics.newImage("images/tile .png")
 
-function tilegrid:load( astray, width, height )
+function tilegrid.new( astray, width, height, spread )
+	local self = setmetatable({}, tilegrid)
 
-	local spread = 4
-
-	self.width = width * spread
-	self.height = height * spread
-
-	self.m = {}          -- create the matrix
-    for i = 1, self.width do
-      	self.m[i] = {}     -- create a new row
-
-      	for j = 1, self.height do
-      		self.m[i][j] = 0 -- create hash for position, multiple objects at same position
+	-- initialize 2d matrix
+	self.m = {}
+    for i = 0, (width*spread)-1 do
+      	self.m[i] = {}
+      	for j = 0, (height*spread)-1 do
+      		self.m[i][j] = 0
       	end
     end
 
-    -- iterate through astray and assign that value to 4x4 grid in m
-
+    -- set values in 2d array based on astray generation
 	for y = 0, height-1 do
     	for x = 0, width-1 do
 			
-			for j = 1, spread do
-				for i = 1, spread do
+			for j = 0, spread-1 do
+				for i = 0, spread-1 do
 					self.m[(x*spread) + i][(y*spread) + j ] = astray[x][y]
 				end
 			end
@@ -32,41 +29,25 @@ function tilegrid:load( astray, width, height )
 		end
 	end
 
+	return self
 end
 
--- draw the tiles based on current screen
-function tilegrid:draw( left, right, top, bottom )
-	
-	local tleft = math.ceil(left/global.tilesize)
-	local tright = math.ceil(right/global.tilesize) + 1
-	local ttop = math.ceil(top/global.tilesize)
-	local tbottom = math.ceil(bottom/global.tilesize) + 1
+function tilegrid:draw(l, t, w, h)
+	local tsize = tilegrid["#"]:getWidth()
+	local tl = math.floor(l/tsize)
+	local tt = math.floor(t/tsize)
+	local tr = math.floor((l+w)/tsize)
+	local tb = math.floor((t+h)/tsize)
 
-	local tsize = global.tilesize
+	for x = tl, tr do
+		for y = tt, tb do 
 
-	for x = tleft, tright  do
-		for y = ttop, tbottom do 
-
-			if x >= 1 and x <= #self.m and y >= 1 and y <= #self.m[1] then
-		        love.graphics.draw( 
-		        	self[ self.m[x][y] ], 
-		            ( (x - tleft ) * tsize ) - ( left % tsize ), 
-		            ( (y - ttop ) * tsize ) - ( top % tsize ))
-	    	end
+	        love.graphics.draw( self[ self.m[x][y] ], x*tsize, y*tsize )
 		end
 	end
-
 end
 
--- caled in zero based function
-function tilegrid:get0( i, j )
-
-	return self.m[i + 1][j + 1]
-end
-
--- called from 1-based function
-function tilegrid:get1( i, j )
-
+function tilegrid:get( i, j )
 	return self.m[i][j]
 end
 

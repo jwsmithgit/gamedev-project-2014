@@ -1,6 +1,6 @@
 enemyGen = {}
 
-function enemyGen.load()
+function enemyGen.new()
 		math.randomseed(os.time())
 		numb = math.floor( math.random( 2 ) )
 		enemyimg = ""

@@ -1,6 +1,6 @@
 zbuffer = {}
 
-function zbuffer.load( )
+function zbuffer.new( )
 	
 	-- create 2d array, with first layer representing y pixels
 	-- second layer represents sorted objects in that layer
