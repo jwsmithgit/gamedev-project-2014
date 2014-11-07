@@ -155,7 +155,7 @@ function love.draw()
 		cam:setScale( cam:getScale() - .005)
 	cam]]--
 	
-	cam:setScale(.01)
+	--cam:setScale(.01)
 	cam:draw(imageDraw)
 
 	-- call player draw function
