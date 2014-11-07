@@ -24,7 +24,7 @@ world = bump.newWorld() -- World creation
 -- generate astray map
 local symbols = {Wall='#', Empty=' ', DoorN=' ', DoorS=' ', DoorE=' ', DoorW=' '}
 -- Astray: width(-1)/2, height(-1)/2, changeDirection, sparseness, deadEndRemoval, ( numRooms, minRoomWidth, maxRoomWidth, minRoomHeight, maxRoomHeight )
-local generator = astray.Astray:new( 40, 40, 60, 40, 60, astray.RoomGenerator:new(20, 2, 8, 2, 8) )
+local generator = astray.Astray:new( 30, 30, 20, 80, 80, astray.RoomGenerator:new(12, 3, 8, 3, 8) )
 local dungeon = generator:GenerateDungeon()
 local tiles = generator:CellToTiles( dungeon, symbols )
 generator:GenerateSparsifyMaze(dungeon)
@@ -155,7 +155,7 @@ function love.draw()
 		cam:setScale( cam:getScale() - .005)
 	cam]]--
 	
-	--cam:setScale(.01)
+	cam:setScale(.01)
 	cam:draw(imageDraw)
 
 	-- call player draw function

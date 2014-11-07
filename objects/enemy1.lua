@@ -1,8 +1,8 @@
 local enemy1 = {}
 enemy1.__index = enemy1
 
-enemy1.imgleft = love.graphics.newImage("images/enemy1left.png")
-enemy1.imgright = love.graphics.newImage("images/enemy1right.png")
+--enemy1.imgleft = love.graphics.newImage("images/enemy1left.png")
+--enemy1.imgright = love.graphics.newImage("images/enemy1right.png")
 enemy1.speed = 10
 
 function enemy1.new( px, py )
