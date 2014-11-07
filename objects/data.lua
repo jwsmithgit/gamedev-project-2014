@@ -1,7 +1,8 @@
 local data = {}
-require("objects/enemy1") -- enemy1 object
 
-function data.new(  )
+local enemy1 = require("objects/enemy1") -- enemy1 object
+
+function data.load(  )
 
 	data.id = 0
 
@@ -17,20 +18,18 @@ function data.new(  )
 
 	-- array of enemy objects
 	data.enemies = {}
-	data.enemies[1] = enemy1
-
-	print( data.enemies[1].x )
+	table.insert( data.enemies, enemy1 )
 	
 end
 
 -- returns the field of an object
-function data.getfield( object, field )
+function data.getfield( object, field)
 
 	return data[object][field]
 end
 
 -- returns the table of an object
-function data.gettable( object )
+function data.gettable(nobject)
 
 	return data[object]
 end

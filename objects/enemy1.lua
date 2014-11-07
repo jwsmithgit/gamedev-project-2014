@@ -5,17 +5,19 @@ enemy1.imgleft = love.graphics.newImage("images/enemy1left.png")
 enemy1.imgright = love.graphics.newImage("images/enemy1right.png")
 enemy1.speed = 10
 
-function enemy1:new( px, py )
-	self.setmetatable()
+function enemy1.new( px, py )
+	local self = setmetatable({}, enemy1)
+
 	self.x = px;
 	self.y = py;
 	self.img = enemy1.imgright
 
 	self.state = "move"
 
+	return self
 end
 
-function enemy1:update(dt)
+function enemy1:update(dt, player)
 
 	-- move left
 	if ( self.x > player.x ) then

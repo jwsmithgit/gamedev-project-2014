@@ -7,9 +7,9 @@ player.h = player.imgdown:getHeight()
 player.xo = player.imgdown:getWidth() / 2
 player.yo = player.imgdown:getHeight() * 3 / 4
 player.xb = 4
-player.yb = 0
+player.yb = player.imgdown:getHeight()/2
 player.wb = 20
-player.hb = player.imgdown:getHeight()
+player.hb = player.imgdown:getHeight()/2
 
 
 function player.new( px, py )
@@ -23,13 +23,25 @@ function player.new( px, py )
 	return self
 end
 
-function player:update( dt )
+function player:update( dt, world )
 	if love.keyboard.isDown(" ") or self.attack_cooldown > 0 then
 		self:attack( dt )
 	--move player
 	elseif love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") then
 		self:move( self.speed * dt )
 	end
+
+	world:move(self, self.x+self.xb, self.y+self.yb)
+	local collisions, len = world:check(self)
+
+	for _,col in ipairs(collisions) do -- If more than one simultaneous collision, they are sorted out by proximity
+	 	--print(("%s collisions with %s."):format(col.item.name, col.other.name))
+	 	dx, dy = collisions[1]:getSlide()
+	 	self.x, self.y = dx-self.xb, dy-self.yb
+		world:move(self, dx, dy)
+
+	end
+
 end
 
 function player:stop()
